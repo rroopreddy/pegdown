@@ -3,3 +3,7 @@ pegdown.iml
 build/
 classes/
 test-output/
+.classpath
+.project
+bin/
+.settings/
