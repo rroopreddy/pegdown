@@ -18,24 +18,17 @@
 
 package org.pegdown;
 
-import org.parboiled.google.base.Preconditions;
-import org.parboiled.support.ParsingResult;
-import org.parboiled.support.ToStringFormatter;
-import org.pegdown.ast.Node;
-import org.testng.annotations.BeforeClass;
-import org.w3c.tidy.Tidy;
+import static org.pegdown.TestUtils.assertEqualsMultiline;
+import static org.testng.Assert.assertNotNull;
 
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import static org.parboiled.support.ParseTreeUtils.printNodeTree;
-import static org.parboiled.trees.GraphUtils.printTree;
-import static org.pegdown.PegDownProcessor.prepare;
-import static org.pegdown.TestUtils.assertEqualsMultiline;
-import static org.testng.Assert.assertEquals;
-import static org.testng.Assert.assertNotNull;
+import org.parboiled.google.base.Preconditions;
+import org.testng.annotations.BeforeClass;
+import org.w3c.tidy.Tidy;
 
 public abstract class AbstractTest {
 
@@ -59,7 +52,7 @@ public abstract class AbstractTest {
 
     protected void test(String testName, String expectedOutput) {
         String markdown = FileUtils.readAllTextFromResource(testName + ".text");
-        String actualHtml = getProcessor().markdownToHtml(markdown);
+        String actualHtml = getProcessor().markdown(markdown);
         Preconditions.checkState(actualHtml != null, "Test not found");
 
         // debugging I: check the parse tree

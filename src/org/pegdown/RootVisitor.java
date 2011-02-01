@@ -19,8 +19,11 @@ package org.pegdown;
 
 import org.pegdown.ast.Node;
 
-public interface Visitor<T extends Node> {
 
-    void visit(T node);
+public interface RootVisitor<T extends Node> extends Visitor<T> {
+
+	void init(Parser parser);
+	
+	String getString();
     
 }

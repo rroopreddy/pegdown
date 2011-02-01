@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2010 Mathias Doenitz
+ * Copyright (C) 2010-2011 The original authors
  *
  * Based on peg-markdown (C) 2008-2010 John MacFarlane
  *
@@ -16,113 +16,132 @@
  * limitations under the License.
  */
 
+
 package org.pegdown;
+
+import static org.parboiled.errors.ErrorUtils.printParseErrors;
 
 import org.parboiled.Parboiled;
 import org.parboiled.support.ParsingResult;
 import org.pegdown.ast.Node;
 
-import static org.parboiled.errors.ErrorUtils.printParseErrors;
-
 /**
- * A clean and lightweight Markdown-to-HTML filter based on a PEG parser implemented with parboiled.
- *
+ * A clean and lightweight Markdown-to-HTML filter based on a PEG parser
+ * implemented with parboiled.
+ * 
  * @see <a href="http://daringfireball.net/projects/markdown/">Markdown</a>
  * @see <a href="http://www.parboiled.org/">parboiled.org</a>
+ * 
+ * @author Mathias Doenitz
+ * @author Dave Syer
  */
 public class PegDownProcessor {
 
-    /**
-     * Defines the number of spaces in a tab, can be changed externally if required.
-     */
-    public static int TABSTOP = 4;
+	/**
+	 * Defines the number of spaces in a tab, can be changed externally if
+	 * required.
+	 */
+	public static int TABSTOP = 4;
 
-    private final Parser parser;
-    private ParsingResult<Node> lastParsingResult;
+	private final Parser parser;
 
-    /**
-     * Creates a new processor instance without any enabled extensions.
-     */
-    public PegDownProcessor() {
-        this(Extensions.NONE);
-    }
+	private ParsingResult<Node> lastParsingResult;
 
-    /**
-     * Creates a new processor instance with the given {@link org.pegdown.Extensions}.
-     *
-     * @param options the flags of the extensions to enable as a bitmask
-     */
-    @SuppressWarnings({"unchecked"})
-    public PegDownProcessor(int options) {
-        parser = Parboiled.createParser(Parser.class, options);
-    }
+	private RootVisitor<Node> visitor = new Printer();
 
-    /**
-     * Returns the underlying parboiled parser object
-     *
-     * @return the parser
-     */
-    Parser getParser() {
-        return parser;
-    }
+	/**
+	 * @param visitor the visitor to set
+	 */
+	public void setRootVisitor(RootVisitor<Node> visitor) {
+		this.visitor = visitor;
+	}
 
-    ParsingResult<Node> getLastParsingResult() {
-        return lastParsingResult;
-    }
+	/**
+	 * Creates a new processor instance without any enabled extensions.
+	 */
+	public PegDownProcessor() {
+		this(Extensions.NONE);
+	}
 
-    /**
-     * Converts the given markdown source to HTML.
-     *
-     * @param markdownSource the markdown source to convert
-     * @return the HTML
-     */
-    public String markdownToHtml(String markdownSource) {
-        parser.references.clear();
-        parser.abbreviations.clear();
+	/**
+	 * Creates a new processor instance with the given
+	 * {@link org.pegdown.Extensions}.
+	 * 
+	 * @param options the flags of the extensions to enable as a bitmask
+	 */
+	public PegDownProcessor(int options) {
+		parser = Parboiled.createParser(Parser.class, options);
+	}
 
-        lastParsingResult = parser.parseRawBlock(prepare(markdownSource));
-        if (lastParsingResult.hasErrors()) {
-            throw new RuntimeException("Internal error during markdown parsing:\n--- ParseErrors ---\n" +
-                    printParseErrors(lastParsingResult)/* +
-                    "\n--- ParseTree ---\n" +
-                    printNodeTree(result)*/
-            );
-        }
+	/**
+	 * Returns the underlying parboiled parser object
+	 * 
+	 * @return the parser
+	 */
+	Parser getParser() {
+		return parser;
+	}
 
-        Printer htmlVisitor = new Printer(parser.references, parser.abbreviations);
+	ParsingResult<Node> getLastParsingResult() {
+		return lastParsingResult;
+	}
 
-        htmlVisitor.visit(lastParsingResult.resultValue);
+	/**
+	 * Converts the given markdown source to HTML.
+	 * 
+	 * @param markdownSource the markdown source to convert
+	 * @return the HTML
+	 */
+	public String markdown(String markdownSource) {
 
-        return htmlVisitor.getString();
-    }
+		parser.references.clear();
+		parser.abbreviations.clear();
 
-    // perform tabstop expansion and add two trailing newlines
+		lastParsingResult = parser.parseRawBlock(prepare(markdownSource));
+		if (lastParsingResult.hasErrors()) {
+			throw new RuntimeException("Internal error during markdown parsing:\n--- ParseErrors ---\n"
+					+ printParseErrors(lastParsingResult)/*
+														 * +
+														 * "\n--- ParseTree ---\n"
+														 * +
+														 * printNodeTree(result)
+														 */
+			);
+		}
 
-    static String prepare(String markDownSource) {
-        StringBuilder sb = new StringBuilder(markDownSource.length() + 2);
-        int charsToTab = TABSTOP;
-        for (int i = 0; i < markDownSource.length(); i++) {
-            char c = markDownSource.charAt(i);
-            switch (c) {
-                case '\t':
-                    while (charsToTab > 0) {
-                        sb.append(' ');
-                        charsToTab--;
-                    }
-                    break;
-                case '\n':
-                    sb.append('\n');
-                    charsToTab = TABSTOP;
-                    break;
-                default:
-                    sb.append(c);
-                    charsToTab--;
-            }
-            if (charsToTab == 0) charsToTab = TABSTOP;
-        }
-        sb.append('\n');
-        sb.append('\n');
-        return sb.toString();
-    }
+		visitor.init(parser);
+		visitor.visit(lastParsingResult.resultValue);
+		return visitor.getString();
+	}
+
+	// perform tabstop expansion and add two trailing newlines
+
+	static String prepare(String markDownSource) {
+		StringBuilder sb = new StringBuilder(markDownSource.length() + 2);
+		int charsToTab = TABSTOP;
+		for (int i = 0; i < markDownSource.length(); i++) {
+			char c = markDownSource.charAt(i);
+			switch (c) {
+			case '\t':
+				while (charsToTab > 0) {
+					sb.append(' ');
+					charsToTab--;
+				}
+				break;
+			case '\n':
+				sb.append('\n');
+				charsToTab = TABSTOP;
+				break;
+			default:
+				sb.append(c);
+				charsToTab--;
+			}
+			if (charsToTab == 0)
+				charsToTab = TABSTOP;
+		}
+		sb.append('\n');
+		sb.append('\n');
+		return sb.toString();
+	}
 
 }
