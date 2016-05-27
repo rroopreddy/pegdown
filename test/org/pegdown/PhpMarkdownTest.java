@@ -31,23 +31,23 @@ public class PhpMarkdownTest extends AbstractTest {
 
     @Test
     public void phpMarkdownTests() throws Exception {
-        test("PhpMarkdown/Backslash_escapes");
-        test("PhpMarkdown/Code_block_in_a_list_item");
-        test("PhpMarkdown/Code_Spans");
-        //test("PhpMarkdown/Email_auto_links");
-        //test("PhpMarkdown/Emphasis");
-        test("PhpMarkdown/Headers");
-        test("PhpMarkdown/Horizontal_Rules");
-        test("PhpMarkdown/Inline_HTML_(Simple)");
-        test("PhpMarkdown/Inline_HTML_(Span)");
-        test("PhpMarkdown/Inline_HTML_comments");
-        //test("PhpMarkdown/Ins_and_del");
-        //test("PhpMarkdown/Links_inline_style");
-        test("PhpMarkdown/MD5_Hashes");
-        //test("PhpMarkdown/Nesting");
-        //test("PhpMarkdown/Parens_in_URL");
-        //test("PhpMarkdown/PHP-Specific_Bugs");
-        test("PhpMarkdown/Tight_blocks");
+        test("phpmarkdown/Backslash_escapes");
+        test("phpmarkdown/Code_block_in_a_list_item");
+        test("phpmarkdown/Code_Spans");
+        //test("phpmarkdown/Email_auto_links");
+        //test("phpmarkdown/Emphasis");
+        test("phpmarkdown/Headers");
+        test("phpmarkdown/Horizontal_Rules");
+        test("phpmarkdown/Inline_HTML_(Simple)");
+        test("phpmarkdown/Inline_HTML_(Span)");
+        test("phpmarkdown/Inline_HTML_comments");
+        //test("phpmarkdown/Ins_and_del");
+        //test("phpmarkdown/Links_inline_style");
+        test("phpmarkdown/MD5_Hashes");
+        //test("phpmarkdown/Nesting");
+        //test("phpmarkdown/Parens_in_URL");
+        //test("phpmarkdown/PHP-Specific_Bugs");
+        test("phpmarkdown/Tight_blocks");
     }
 
 }

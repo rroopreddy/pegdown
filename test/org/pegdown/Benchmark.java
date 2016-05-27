@@ -48,7 +48,7 @@ public class Benchmark {
         String markdown = FileUtils.readAllTextFromResource("benchmark.text");
         Preconditions.checkNotNull(markdown, "benchmark file not found");
         for (int i = 0; i < 100; i++) {
-            processor.markdownToHtml(markdown);
+            processor.markdown(markdown);
         }
         time(start);
 
@@ -60,7 +60,7 @@ public class Benchmark {
                 return profilingRunner;
             }
         };
-        processor.markdownToHtml(markdown);
+        processor.markdown(markdown);
         ProfilingParseRunner.Report report = profilingRunner.getReport();
         System.out.println();
         System.out.println(report.print());

@@ -18,10 +18,17 @@
 
 package org.pegdown;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.parboiled.BaseParser;
 import org.parboiled.Context;
 import org.parboiled.Rule;
-import org.parboiled.annotations.*;
+import org.parboiled.annotations.Cached;
+import org.parboiled.annotations.DontSkipActionsInPredicates;
+import org.parboiled.annotations.MemoMismatches;
+import org.parboiled.annotations.SkipActionsInPredicates;
 import org.parboiled.common.ArrayBuilder;
 import org.parboiled.common.Factory;
 import org.parboiled.common.StringUtils;
@@ -30,17 +37,38 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.StringVar;
 import org.parboiled.support.Var;
-import org.pegdown.ast.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import org.pegdown.ast.AbbreviationNode;
+import org.pegdown.ast.AutoLinkNode;
+import org.pegdown.ast.BlockQuoteNode;
+import org.pegdown.ast.BulletListNode;
+import org.pegdown.ast.CodeNode;
+import org.pegdown.ast.EmphNode;
+import org.pegdown.ast.ExpLinkNode;
+import org.pegdown.ast.HeaderNode;
+import org.pegdown.ast.HtmlBlockNode;
+import org.pegdown.ast.LooseListItemNode;
+import org.pegdown.ast.MailLinkNode;
+import org.pegdown.ast.Node;
+import org.pegdown.ast.OrderedListNode;
+import org.pegdown.ast.ParaNode;
+import org.pegdown.ast.QuotedNode;
+import org.pegdown.ast.RefLinkNode;
+import org.pegdown.ast.ReferenceNode;
+import org.pegdown.ast.SimpleNode;
+import org.pegdown.ast.SimpleNodeTypes;
+import org.pegdown.ast.StrongNode;
+import org.pegdown.ast.TableCellNode;
+import org.pegdown.ast.TableColumnNode;
+import org.pegdown.ast.TableNode;
+import org.pegdown.ast.TableRowNode;
+import org.pegdown.ast.TextNode;
+import org.pegdown.ast.TightListItemNode;
+import org.pegdown.ast.VerbatimNode;
 
 /**
  * Parboiled parser for the standard and extended markdown syntax.
  * Builds an Abstract Syntax Tree (AST) of {@link Node} objects.
  */
-@SuppressWarnings({"InfiniteRecursion"})
 @SkipActionsInPredicates
 public class Parser extends BaseParser<Node> implements SimpleNodeTypes, Extensions {
 
